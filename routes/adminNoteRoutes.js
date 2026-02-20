@@ -1,20 +1,28 @@
 const express = require("express");
 const Note = require("../models/Note");
-const auth = require("../middleware/authMiddleware");
-
 const router = express.Router();
 
-router.get("/", auth, async (req, res) => {
-  const note = await Note.findOne();
-  res.json(note);
+// Get note
+router.get("/", async (req, res) => {
+  try {
+    const note = await Note.findOne();
+    res.json(note);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch note" });
+  }
 });
 
-router.post("/", auth, async (req, res) => {
-  let note = await Note.findOne();
-  if (!note) note = new Note({ content: req.body.content });
-  else note.content = req.body.content;
-  await note.save();
-  res.json(note);
+// Add / update note
+router.post("/", async (req, res) => {
+  try {
+    let note = await Note.findOne();
+    if (!note) note = new Note({ content: req.body.content });
+    else note.content = req.body.content;
+    await note.save();
+    res.json(note);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to add note" });
+  }
 });
 
 module.exports = router;
