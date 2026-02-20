@@ -38,9 +38,3 @@ router.delete("/:id", async (req, res) => {
 });
 
 module.exports = router;
-router.delete("/:id", auth, async (req, res) => {
-  await Job.findByIdAndDelete(req.params.id);
-  res.json({ message: "Job deleted" });
-});
-
-module.exports = router;
