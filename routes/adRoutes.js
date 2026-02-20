@@ -1,8 +1,8 @@
 const express = require("express");
 const Ad = require("../models/Ad");
-const auth = require("../middleware/authMiddleware");
 const router = express.Router();
 
+// Get all ads
 router.get("/", async (req, res) => {
   try {
     const ads = await Ad.find();
@@ -12,7 +12,8 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/", auth, async (req, res) => {
+// Add ad
+router.post("/", async (req, res) => {
   try {
     const ad = new Ad(req.body);
     await ad.save();
@@ -22,7 +23,8 @@ router.post("/", auth, async (req, res) => {
   }
 });
 
-router.delete("/:id", auth, async (req, res) => {
+// Delete ad
+router.delete("/:id", async (req, res) => {
   try {
     const ad = await Ad.findById(req.params.id);
     if (!ad) return res.status(404).json({ message: "Ad not found" });
