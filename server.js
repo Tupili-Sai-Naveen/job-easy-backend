@@ -6,21 +6,17 @@ const cors = require("cors");
 
 const app = express();
 
-// --------------------- CORS ---------------------
-// Allow Vercel frontend + localhost
 const allowedOrigins = [
   "http://localhost:5173", // local dev
-  "https://job-easy-frontend19.vercel.app" // Vercel frontend
+  "https://job-easy-frontend19.vercel.app" // production
 ];
 
 app.use(cors({
   origin: function(origin, callback) {
-    if (!origin) return callback(null, true); // allow Postman or server-to-server
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    } else {
-      return callback(new Error(`CORS blocked for origin ${origin}`));
-    }
+    if (!origin) return callback(null, true); // allow Postman / server
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    if (origin.includes("vercel.app")) return callback(null, true); // allow all Vercel previews
+    return callback(new Error(`CORS blocked for origin ${origin}`));
   },
   credentials: true
 }));
