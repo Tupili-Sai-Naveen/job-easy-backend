@@ -4,21 +4,6 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Admin = require("../models/Admin");
 
-// TEMPORARY - delete after fixing!
-router.get("/fix-admin", async (req, res) => {
-  try {
-    const hashed = await bcrypt.hash("admin123", 10);
-    await Admin.findOneAndUpdate(
-      { email: "admin@gmail.com" },
-      { password: hashed },
-      { upsert: true, new: true }
-    );
-    res.json({ message: "Admin password reset!", hash: hashed });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
 // POST /api/admin/auth/login
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
