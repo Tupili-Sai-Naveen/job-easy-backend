@@ -1,8 +1,15 @@
 const jwt = require("jsonwebtoken");
 
-module.exports = (req, res, next) => {
+/**
+ * Protects admin-only routes.
+ * Expects:  Authorization: Bearer <token>
+ */
+module.exports = function authMiddleware(req, res, next) {
   const authHeader = req.headers.authorization;
-  if (!authHeader) return res.status(401).json({ message: "No token" });
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ message: "Access denied – no token provided" });
+  }
 
   const token = authHeader.split(" ")[1];
 
@@ -10,7 +17,7 @@ module.exports = (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.admin = decoded;
     next();
-  } catch (err) {
-    res.status(401).json({ message: "Invalid token" });
+  } catch {
+    res.status(401).json({ message: "Invalid or expired token" });
   }
 };
