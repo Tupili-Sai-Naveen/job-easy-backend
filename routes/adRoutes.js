@@ -1,38 +1,38 @@
 const express = require("express");
-const Ad = require("../models/Ad");
 const router = express.Router();
+const Ad = require("../models/Ad");
+const auth = require("../middleware/authMiddleware");
 
-// Get all ads
-router.get("/", async (req, res) => {
+// GET /api/ads  – public
+router.get("/", async (_req, res) => {
   try {
     const ads = await Ad.find();
     res.json(ads);
-  } catch (err) {
+  } catch {
     res.status(500).json({ message: "Server error" });
   }
 });
 
-// Add ad
-router.post("/", async (req, res) => {
+// POST /api/ads  – admin only
+router.post("/", auth, async (req, res) => {
   try {
-    const ad = new Ad(req.body);
-    await ad.save();
-    res.json(ad);
-  } catch (err) {
-    res.status(500).json({ message: "Failed to add ad" });
+    const { title, image, link } = req.body;
+    if (!title || !image || !link)
+      return res.status(400).json({ message: "All fields required" });
+    const ad = await Ad.create({ title, image, link });
+    res.status(201).json(ad);
+  } catch {
+    res.status(500).json({ message: "Server error" });
   }
 });
 
-// Delete ad
-router.delete("/:id", async (req, res) => {
+// DELETE /api/ads/:id  – admin only
+router.delete("/:id", auth, async (req, res) => {
   try {
-    const ad = await Ad.findById(req.params.id);
-    if (!ad) return res.status(404).json({ message: "Ad not found" });
-
-    await ad.deleteOne();
-    res.status(200).json({ message: "Ad deleted successfully" });
-  } catch (err) {
-    res.status(500).json({ message: "Failed to delete ad" });
+    await Ad.findByIdAndDelete(req.params.id);
+    res.json({ message: "Deleted" });
+  } catch {
+    res.status(500).json({ message: "Server error" });
   }
 });
 
