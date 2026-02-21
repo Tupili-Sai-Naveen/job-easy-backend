@@ -1,27 +1,29 @@
 const express = require("express");
-const Note = require("../models/Note");
 const router = express.Router();
+const Note = require("../models/Note");
+const auth = require("../middleware/authMiddleware");
 
-// Get note
-router.get("/", async (req, res) => {
+// GET /api/admin-note  – PUBLIC so Jobs page can show it without token
+router.get("/", async (_req, res) => {
   try {
-    const note = await Note.findOne();
-    res.json(note);
-  } catch (err) {
-    res.status(500).json({ message: "Failed to fetch note" });
+    const note = await Note.findOne().sort({ createdAt: -1 });
+    res.json(note || { content: "" });
+  } catch {
+    res.status(500).json({ message: "Server error" });
   }
 });
 
-// Add / update note
-router.post("/", async (req, res) => {
+// POST /api/admin-note  – admin only
+router.post("/", auth, async (req, res) => {
   try {
-    let note = await Note.findOne();
-    if (!note) note = new Note({ content: req.body.content });
-    else note.content = req.body.content;
-    await note.save();
-    res.json(note);
-  } catch (err) {
-    res.status(500).json({ message: "Failed to add note" });
+    const { content } = req.body;
+    if (!content) return res.status(400).json({ message: "Content is required" });
+    // Replace existing note (single note model)
+    await Note.deleteMany({});
+    const note = await Note.create({ content });
+    res.status(201).json(note);
+  } catch {
+    res.status(500).json({ message: "Server error" });
   }
 });
 
