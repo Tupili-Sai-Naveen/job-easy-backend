@@ -3,7 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const http = require("http");            // ← NEW
-const { Server } = require("socket.io"); // ← NEW
+const { Server } = require("socket.io");
 
 const app = express();
 const server = http.createServer(app);   // ← NEW (wrap express)
