@@ -17,7 +17,11 @@
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.2.1",
+<<<<<<< HEAD
     "socket.io": "^4.7.5"
+=======
+    "socket.io": "^4.8.3"
+>>>>>>> a0220da (Updated code)
   },
   "devDependencies": {
     "nodemon": "^3.1.11"
