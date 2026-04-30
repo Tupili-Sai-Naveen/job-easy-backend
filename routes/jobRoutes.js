@@ -12,6 +12,16 @@ router.get("/", async (_req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+// GET single job (NEW)
+router.get("/:id", async (req, res) => {
+  try {
+    const job = await Job.findById(req.params.id);
+    if (!job) return res.status(404).json({ message: "Job not found" });
+    res.json(job);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 // GET /api/jobs/today/count  – public
 router.get("/today/count", async (_req, res) => {
