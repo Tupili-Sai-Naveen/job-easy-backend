@@ -3,7 +3,7 @@ const router = express.Router();
 const Job = require("../models/Job");
 const auth = require("../middleware/authMiddleware");
 
-// ✅ GET TODAY COUNT (keep first)
+// ✅ GET TODAY COUNT
 router.get("/today/count", async (_req, res) => {
   try {
     const start = new Date();
@@ -19,21 +19,20 @@ router.get("/today/count", async (_req, res) => {
   }
 });
 
-// ✅ GET ALL JOBS (with pagination + search)
+// ✅ GET ALL JOBS (NO LIMIT 🚀)
 router.get("/", async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = 10;
     const search = req.query.search || "";
 
     const filter = {
-      company: { $regex: search, $options: "i" }
+      $or: [
+        { company: { $regex: search, $options: "i" } },
+        { role: { $regex: search, $options: "i" } },
+        { location: { $regex: search, $options: "i" } }
+      ]
     };
 
-    const jobs = await Job.find(filter)
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit);
+    const jobs = await Job.find(filter).sort({ createdAt: -1 });
 
     res.json(jobs);
   } catch {
