@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const http = require("http");            // ← NEW
 const { Server } = require("socket.io"); // ← NEW
-
+const blogRoutes = require("./routes/blogRoutes");
 const app = express();
 const server = http.createServer(app);   // ← NEW (wrap express)
 
@@ -39,6 +39,7 @@ app.use("/api/ads", require("./routes/adRoutes"));
 app.use("/api/admin-note", require("./routes/adminNoteRoutes"));
 app.use("/api/admin/auth", require("./routes/adminAuth"));
 app.use("/api/telegram", require("./routes/telegramRoutes"));
+app.use("/api/blog", blogRoutes);
 app.get("/", (req, res) => res.send("API running"));
 
 mongoose.connect(process.env.MONGO_URI)
